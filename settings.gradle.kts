@@ -1,0 +1,1 @@
+rootProject.name = "reminder.ru.reminder-backend"
