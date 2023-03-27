@@ -1,11 +1,10 @@
-package reminder.ru.database.token
+package reminder.ru.database.tokens
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Tokens: Table("users") {
+object Tokens: Table("tokens") {
     //определяем поля
     private val id = Tokens.varchar("id", 50)
     private val login = Tokens.varchar("login", 25)

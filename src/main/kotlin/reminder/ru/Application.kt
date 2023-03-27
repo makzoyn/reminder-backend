@@ -9,8 +9,8 @@ import reminder.ru.features.register.configureRegisterRouting
 import reminder.ru.plugins.*
 
 fun main() {
-    Database.connect("jdbc:postgresql://5432/reminder", driver = "org.postgresql.Driver",
-        password = "marakas231")
+    Database.connect("jdbc:postgresql://localhost:5432/reminder", driver = "org.postgresql.Driver",
+        user = "postgres", password = "marakas231")
     embeddedServer(CIO, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }

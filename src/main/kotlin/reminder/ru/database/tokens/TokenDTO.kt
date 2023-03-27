@@ -1,4 +1,4 @@
-package reminder.ru.database.token
+package reminder.ru.database.tokens
 
 class TokenDTO (
     val rowId: String,
