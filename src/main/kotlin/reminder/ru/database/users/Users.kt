@@ -9,7 +9,6 @@ object Users : Table("users") {
     //определяем поля
     private val login = Users.varchar("login", 25)
     private val password = Users.varchar("password", 25)
-    private val username = Users.varchar("username", 30)
     private val email = Users.varchar("email", 25)
 
     //определяем основные операции
@@ -19,7 +18,6 @@ object Users : Table("users") {
                 it[login] = userDTO.login
                 it[password] = userDTO.password
                 it[email] = userDTO.email ?: ""
-                it[username] = userDTO.username
             }
         }
     }
@@ -32,7 +30,6 @@ object Users : Table("users") {
                 UserDTO(
                     login = userModel[Users.login],
                     password = userModel[password],
-                    username = userModel[username],
                     email = userModel[email]
                 )
             }

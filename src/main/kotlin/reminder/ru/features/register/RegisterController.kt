@@ -38,8 +38,7 @@ class RegisterController(private val call: ApplicationCall) {
                 UserDTO(
                     login = registerReceiveRemote.login,
                     password = registerReceiveRemote.password,
-                    email = registerReceiveRemote.email,
-                    username = ""
+                    email = registerReceiveRemote.email
                 )
             )
             //вставляем запись токена в бд токенов
