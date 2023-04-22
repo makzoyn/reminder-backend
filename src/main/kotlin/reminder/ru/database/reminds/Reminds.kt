@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 
-
 object Reminds: Table("reminds") {
     private val id = Reminds.integer("id_remind").autoIncrement()
     private val login = Reminds.varchar("login", 25)
@@ -30,7 +29,8 @@ object Reminds: Table("reminds") {
         }
     }
 
-    fun fetchRemind(login: String): RemindDTO? {
+    //TODO realize this function right, now it's just fetch one remind
+    /*fun updateRemind(login: String): RemindDTO? {
         return try {
             transaction {
                 val remindModel = Reminds.select { Reminds.login.eq(login) }.single()
@@ -47,9 +47,9 @@ object Reminds: Table("reminds") {
         catch (e: Exception) {
             null
         }
-    }
-
-    fun fetchAllReminds(login: String) : List<RemindDTO> {
+    }*/
+//    fun updateRemind()
+    fun fetchReminds(login: String) : List<RemindDTO> {
         return try {
             Reminds.selectAll().toList().map {
                 RemindDTO(

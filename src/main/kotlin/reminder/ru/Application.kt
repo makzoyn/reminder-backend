@@ -6,6 +6,7 @@ import io.ktor.server.cio.*
 import org.jetbrains.exposed.sql.Database
 import reminder.ru.features.login.configureLoginRouting
 import reminder.ru.features.register.configureRegisterRouting
+import reminder.ru.features.reminds.configureRemindsRouting
 import reminder.ru.plugins.*
 
 fun main() {
@@ -19,5 +20,6 @@ fun Application.module() {
     configureSerialization()
     configureLoginRouting()
     configureRegisterRouting()
+    configureRemindsRouting()
     configureRouting()
 }
