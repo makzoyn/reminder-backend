@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FetchRemindResponse(
-    val games: List<RemindResponse>
+    val reminds: List<RemindResponse>
 )
 
 @Serializable
@@ -13,5 +13,6 @@ data class RemindResponse(
     val title: String,
     val description: String,
     val time: String,
-    val date: String
+    val date: String,
+    val alarmId: String
 )

@@ -17,9 +17,9 @@ fun main() {
 }
 
 fun Application.module() {
+    configureRemindsRouting()
     configureSerialization()
     configureLoginRouting()
     configureRegisterRouting()
-    configureRemindsRouting()
     configureRouting()
 }

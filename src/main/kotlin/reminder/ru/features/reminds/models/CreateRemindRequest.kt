@@ -4,14 +4,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateRemindRequest(
-    val id: Int
+    val title: String,
+    val description: String,
+    val time: String,
+    val date: String,
+    val login: String
 )
 
 @Serializable
 data class CreateRemindResponse(
-    val id: Int,
+    val id: String,
     val title: String,
     val description: String,
     val time: String,
-    val date: String
+    val date: String,
+    val alarmId: String
 )
