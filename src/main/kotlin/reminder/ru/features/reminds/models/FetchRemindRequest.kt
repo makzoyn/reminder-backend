@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FetchRemindRequest (
-    val searchQuery: String
+    val login: String
 )

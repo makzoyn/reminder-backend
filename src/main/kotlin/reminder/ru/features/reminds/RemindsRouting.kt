@@ -10,25 +10,15 @@ fun Application.configureRemindsRouting() {
             val remindsController = RemindsController(call)
             remindsController.createRemind()
         }
-        get("/reminds/fetch") {
+        post("/reminds/fetch") {
             RemindsController(call).performSearch()
-    }
+        }
+        put("/reminds/update/{id}"){
+            RemindsController(call).updateRemind()
+        }
+        delete("/reminds/delete/{id}") {
+            RemindsController(call).deleteRemind()
+        }
 
     }
 }
-//routing {
-//    post("/reminders/fetch") {
-//        val remindsController: RemindsController(call)
-//        remindsController.performSearch()
-//
-//    }
-//    post("/reminders/edit") {
-//        val remindsController: RemindsController(call)
-//        remindsController.updateRemind()
-//
-//    }
-//    post("reminds/create") {
-//        val remindsController: RemindsController(call)
-//        remindsController.createRemind()
-//    }
-//}

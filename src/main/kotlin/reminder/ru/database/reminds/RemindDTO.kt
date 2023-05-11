@@ -4,6 +4,7 @@ package reminder.ru.database.reminds
 import kotlinx.serialization.Serializable
 import reminder.ru.features.reminds.models.CreateRemindRequest
 import reminder.ru.features.reminds.models.CreateRemindResponse
+import reminder.ru.features.reminds.models.UpdateRemindRequest
 import java.util.*
 
 @Serializable
@@ -26,6 +27,17 @@ fun CreateRemindRequest.mapToRemindDTO(): RemindDTO = RemindDTO(
     alarmId = UUID.randomUUID().toString(),
     login = login
 )
+
+fun UpdateRemindRequest.mapToUprateRemindDTO(id: String): RemindDTO = RemindDTO(
+    id = id,
+    title = title,
+    description = description,
+    time = time,
+    date = date,
+    alarmId = UUID.randomUUID().toString(),
+    login = login
+)
+
 
 fun RemindDTO.mapToCreateRemindResponse() : CreateRemindResponse =
     CreateRemindResponse(

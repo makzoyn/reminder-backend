@@ -2,12 +2,11 @@ package reminder.ru.database.reminds
 
 import io.ktor.http.*
 import io.ktor.server.response.*
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import reminder.ru.database.users.UserDTO
+import reminder.ru.database.users.Users
 
 
 object Reminds : Table("reminds") {
@@ -34,50 +33,24 @@ object Reminds : Table("reminds") {
     }
 
     //TODO realize this function right, now it's just fetch one remind
-    /*fun updateRemind(login: String): RemindDTO? {
-        return try {
-            transaction {
-                val remindModel = Reminds.select { Reminds.login.eq(login) }.single()
-                RemindDTO(
-                    id = remindModel[Reminds.id],
-                    login = remindModel[Reminds.login],
-                    title = remindModel[title],
-                    description = remindModel[description],
-                    time = remindModel[time],
-                    date = remindModel[date]
-                )
+    fun update(remindDTO: RemindDTO) {
+        transaction {
+            Reminds.update({ Reminds.id eq remindDTO.id }) {
+                it[title] = remindDTO.title
+                it[description] = remindDTO.description
+                it[time] = remindDTO.time
+                it[date] = remindDTO.date
             }
         }
-        catch (e: Exception) {
-            null
+    }
+
+    fun delete(id: String) {
+        transaction {
+            Reminds.deleteWhere { Reminds.id eq id }
         }
-    }*/
-//    fun updateRemind()
-    /*fun fetchReminds(login: String): List<RemindDTO> {
-        return try {
-            if (login != "empty") {
-                transaction {
-                    Reminds.selectAll().toList().map {
-                        RemindDTO(
-                            id = it[Reminds.id],
-                            title = it[title],
-                            description = it[description],
-                            time = it[time],
-                            date = it[date],
-                            alarmId = it[alarmId],
-                            login = login
-                        )
-                    }
-                }
-            }
-            else {
-                println("Login invalid")
-                emptyList()
-            }
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }*/
+    }
+
+
     fun fetchReminds(): List<RemindDTO> {
         return try {
             transaction {
@@ -97,4 +70,5 @@ object Reminds : Table("reminds") {
             emptyList()
         }
     }
+
 }
