@@ -8,15 +8,16 @@ data class CreateRemindRequest(
     val description: String,
     val time: String,
     val date: String,
+    val alarmId: Int,
     val login: String
 )
 
 @Serializable
 data class CreateRemindResponse(
-    val id: String,
+    val id: Int,
     val title: String,
     val description: String,
     val time: String,
     val date: String,
-    val alarmId: String
+    val alarmId: Int
 )

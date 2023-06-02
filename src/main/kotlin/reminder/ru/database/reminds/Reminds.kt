@@ -8,14 +8,16 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import reminder.ru.database.users.UserDTO
 import reminder.ru.database.users.Users
 
+import reminder.ru.features.reminds.models.RemindResponse
+
 
 object Reminds : Table("reminds") {
-    private val id = Reminds.varchar("id", 50)
+    private val id = Reminds.integer("id")
     private var title = Reminds.varchar("title", 50)
     private var description = Reminds.varchar("description", 300)
     private var time = Reminds.varchar("time", 10)
     private var date = Reminds.varchar("date", 10)
-    private var alarmId = Reminds.varchar("alarm_id", 50)
+    private var alarmId = Reminds.integer("alarm_id")
     private val login = Reminds.varchar("login", 25)
 
     fun insert(remindDTO: RemindDTO) {
@@ -40,11 +42,12 @@ object Reminds : Table("reminds") {
                 it[description] = remindDTO.description
                 it[time] = remindDTO.time
                 it[date] = remindDTO.date
+                it[alarmId] = remindDTO.alarmId
             }
         }
     }
 
-    fun delete(id: String) {
+    fun delete(id: Int) {
         transaction {
             Reminds.deleteWhere { Reminds.id eq id }
         }
