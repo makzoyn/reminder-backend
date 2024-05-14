@@ -19,6 +19,7 @@ application {
 
 repositories {
     mavenCentral()
+
 }
 
 val exposed_version: String by project
@@ -40,4 +41,5 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("com.h2database:h2:$h2_version")
+    implementation("com.google.firebase:firebase-admin:9.0.0")
 }

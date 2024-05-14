@@ -7,20 +7,20 @@ import io.ktor.server.response.*
 import reminder.ru.database.tokens.TokenDTO
 import reminder.ru.database.tokens.Tokens
 import reminder.ru.database.users.Users
+import reminder.ru.models.ErrorModel
 import java.util.*
 
-class LoginController(private val call: ApplicationCall){
+class LoginController(private val call: ApplicationCall) {
 
     suspend fun performLogin() {
         val receive = call.receive<LoginReceiveRemote>()
-        val userDTO= Users.fetchUser(receive.login)
+        val userDTO = Users.fetchUser(receive.login)
 
-        if (userDTO == null){
-            call.respond(HttpStatusCode.BadRequest, "User not found")
-        }
-        else{
-            if (userDTO.password == receive.password){
-                    val token = UUID.randomUUID().toString()
+        if (userDTO == null) {
+            call.respond(HttpStatusCode.BadRequest, ErrorModel("Error", "User not found"))
+        } else {
+            if (userDTO.password == receive.password) {
+                val token = UUID.randomUUID().toString()
                 Tokens.insert(
                     TokenDTO(
                         rowId = UUID.randomUUID().toString(),
@@ -29,10 +29,8 @@ class LoginController(private val call: ApplicationCall){
                     )
                 )
                 call.respond(LoginResponseRemote(token = token))
-            }
-            else
-            {
-                call.respond(HttpStatusCode.BadRequest, "Invalid password")
+            } else {
+                call.respond(HttpStatusCode.BadRequest, ErrorModel("Error", "Invalid password"))
             }
         }
     }

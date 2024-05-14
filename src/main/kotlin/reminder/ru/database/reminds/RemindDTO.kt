@@ -2,32 +2,34 @@ package reminder.ru.database.reminds
 
 
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.idParam
-import reminder.ru.features.reminds.models.*
+import reminder.ru.features.reminds.models.CreateRemindRequest
+import reminder.ru.features.reminds.models.CreateRemindResponse
+import reminder.ru.features.reminds.models.RemindResponse
+import reminder.ru.features.reminds.models.UpdateRemindRequest
 import java.util.*
 
 @Serializable
 class RemindDTO(
     val id: Int,
     val title: String,
-    val description: String,
-    val time: String,
-    val date: String,
-    val alarmId: Int,
+    val description: String?,
+    val time: String?,
+    val date: String?,
+    val alarmId: Int?,
     val login: String
 )
 
-fun CreateRemindRequest.mapToRemindDTO(): RemindDTO = RemindDTO(
-    id = Random(System.currentTimeMillis()).nextInt(),
+fun CreateRemindRequest.mapToRemindDTO(login: String): RemindDTO = RemindDTO(
+    id = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
     title = title,
     description = description,
     time = time,
     date = date,
-    alarmId = alarmId,
+    alarmId = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
     login = login
 )
 
-fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int): RemindDTO = RemindDTO(
+fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int, login: String): RemindDTO = RemindDTO(
     id = id,
     title = title,
     description = description,
@@ -45,8 +47,7 @@ fun RemindDTO.mapToCreateRemindResponse() : CreateRemindResponse =
     title = title,
     description = description,
     time = time,
-    date = date,
-    alarmId = alarmId
+    date = date
 )
 
 fun RemindDTO.mapToRemindResponse() : RemindResponse =
@@ -55,6 +56,5 @@ fun RemindDTO.mapToRemindResponse() : RemindResponse =
         title = title,
         description = description,
         time = time,
-        date = date,
-        alarmId = alarmId
+        date = date
     )

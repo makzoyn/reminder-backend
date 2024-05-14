@@ -1,26 +1,30 @@
 package reminder.ru.database.tokens
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Tokens: Table("tokens") {
-    //определяем поля
+object Tokens : Table("tokens") {
     private val id = Tokens.varchar("id", 50)
-    private val login = Tokens.varchar("login", 25)
-    private val token = Tokens.varchar("token", 50)
+    val login = Tokens.varchar("login", 25)
+    val token = Tokens.varchar("token", 50)
 
-    //определяем основные операции
-    fun insert(tokenDTO: TokenDTO){
-        transaction{
-            Tokens.insert{
-                it[id] = tokenDTO.rowId
-                it[login] = tokenDTO.login
-                it[token] = tokenDTO.token
+    fun insert(tokenDTO: TokenDTO) {
+        transaction {
+            val existingToken = Tokens.select { login eq tokenDTO.login }.singleOrNull()
+            if (existingToken != null) {
+                Tokens.update({ login eq tokenDTO.login }) {
+                    it[token] = tokenDTO.token
+                }
+            } else {
+                Tokens.insert {
+                    it[id] = tokenDTO.rowId
+                    it[login] = tokenDTO.login
+                    it[token] = tokenDTO.token
+                }
             }
         }
     }
+
     fun fetchTokens(): List<TokenDTO> {
         return try {
             transaction {

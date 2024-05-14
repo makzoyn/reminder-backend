@@ -9,6 +9,7 @@ import reminder.ru.database.tokens.TokenDTO
 import reminder.ru.database.tokens.Tokens
 import reminder.ru.database.users.UserDTO
 import reminder.ru.database.users.Users
+import reminder.ru.models.ErrorModel
 import reminder.ru.utils.isValidEmail
 import java.util.*
 
@@ -18,13 +19,13 @@ class RegisterController(private val call: ApplicationCall) {
     suspend fun registerNewUser() {
         val registerReceiveRemote = call.receive<RegisterReceiveRemote>()
         if (!registerReceiveRemote.email.isValidEmail()) {
-            call.respond(HttpStatusCode.BadRequest, "Email is not valid")
+            call.respond(HttpStatusCode.BadRequest, ErrorModel("Error", "Email is not valid"))
         }
         //проверяем есть ли такой юзер
         val userDTO = Users.fetchUser(registerReceiveRemote.login)
         //если юзер существует, то отправляем статус код, что юзер существует
         if (userDTO != null) {
-            call.respond(HttpStatusCode.Conflict, "User already exists")
+            call.respond(HttpStatusCode.Conflict, ErrorModel("Error", "User already exists"))
         } else {
             //если нет, то генерируем токен, вставляем пользователя в бд
             val token = UUID.randomUUID().toString()
@@ -32,10 +33,11 @@ class RegisterController(private val call: ApplicationCall) {
             try {
 
             } catch (e: ExposedSQLException) {
-                call.respond(HttpStatusCode.Conflict, "User already exists")
+                call.respond(HttpStatusCode.Conflict, ErrorModel("Error", "User already exists"))
             }
             Users.insert(
                 UserDTO(
+                    id = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
                     login = registerReceiveRemote.login,
                     password = registerReceiveRemote.password,
                     email = registerReceiveRemote.email

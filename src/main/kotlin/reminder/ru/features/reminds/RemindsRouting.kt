@@ -18,6 +18,5 @@ fun Application.configureRemindsRouting() {
         delete("/reminds/delete/{id}") {
             RemindsController(call).deleteRemind()
         }
-
     }
 }
