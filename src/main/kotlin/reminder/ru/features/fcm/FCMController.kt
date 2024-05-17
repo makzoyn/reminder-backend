@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import reminder.ru.database.fcm_tokens.FCMTokenDTO
 import reminder.ru.database.fcm_tokens.FCMTokens
 import reminder.ru.database.reminds.Reminds
+import reminder.ru.database.reminds.mapToUprateRemindDTO
 import reminder.ru.database.tokens.Tokens
 import reminder.ru.utils.TokenCheck
 import java.util.*
@@ -21,7 +22,6 @@ class FCMController(private val call: ApplicationCall) {
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val login = findLoginByToken(token!!)
             val fcmTokenReceiveRemote = call.receive<FCMReceiveRemote>()
-
             FCMTokens.insert(
                 FCMTokenDTO(
                     rowId = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
@@ -35,11 +35,11 @@ class FCMController(private val call: ApplicationCall) {
         }
     }
 
-    suspend fun deleteAfterPush() {
+    suspend fun setNotifiedAfterPush() {
         val token = call.request.headers["Bearer-Authorization"]
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val receiveRemote = call.receive<FCMReceiveRemind>()
-            Reminds.delete(receiveRemote.id)
+            Reminds.updateNotified(receiveRemote.id, notified = true)
             call.respond(HttpStatusCode.OK)
         } else {
             call.respond(HttpStatusCode.Unauthorized, "Token expired")

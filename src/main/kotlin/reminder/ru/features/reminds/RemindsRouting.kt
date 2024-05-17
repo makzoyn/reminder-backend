@@ -12,10 +12,13 @@ fun Application.configureRemindsRouting() {
         get("/reminds/fetch") {
             RemindsController(call).performSearch()
         }
-        put("/reminds/update/{id}"){
+        get("/reminds/fetch/{id}") {
+            RemindsController(call).getRemindById()
+        }
+        patch("/reminds/update/{id}"){
             RemindsController(call).updateRemind()
         }
-        delete("/reminds/delete/{id}") {
+        post("/reminds/delete") {
             RemindsController(call).deleteRemind()
         }
     }

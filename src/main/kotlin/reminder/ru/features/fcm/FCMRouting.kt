@@ -11,7 +11,7 @@ fun Application.configureFCMRouting() {
         }
         post("/devices/delete-after-push") {
             val fcmController = FCMController(call)
-            fcmController.deleteAfterPush()
+            fcmController.setNotifiedAfterPush()
         }
     }
 }

@@ -13,7 +13,8 @@ data class RemindResponse(
     val title: String,
     val description: String?,
     val time: String?,
-    val date: String?
+    val date: String?,
+    val notified: Boolean
 )
 
 fun List<RemindResponse>.toFetchRemindResponse() = FetchRemindResponse(

@@ -13,9 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import reminder.ru.database.fcm_tokens.FCMTokens
 import reminder.ru.database.reminds.*
 import reminder.ru.database.tokens.Tokens
-import reminder.ru.features.reminds.models.CreateRemindRequest
-import reminder.ru.features.reminds.models.UpdateRemindRequest
-import reminder.ru.features.reminds.models.toFetchRemindResponse
+import reminder.ru.features.reminds.models.*
 import reminder.ru.models.ErrorModel
 import reminder.ru.models.PushNotificationModel
 import reminder.ru.pushreminds.sendNotification
@@ -59,7 +57,6 @@ class RemindsController(private val call: ApplicationCall) {
     }
 
     private fun combineDateTime(date: String, time: String): LocalDateTime {
-        // Форматтеры для даты и времени
         val combinedDateTime = try {
 
             val dateParts = date.split(".")
@@ -73,12 +70,7 @@ class RemindsController(private val call: ApplicationCall) {
             val minute = timeParts[1].toInt()
             val second = timeParts[2].toInt()
 
-            // Создаем объект LocalDateTime
             val dateTime = LocalDateTime.of(year, month, day, hour, minute, second)
-
-            // Парсинг строки даты и времени
-
-            // Объединение даты и времени
             dateTime
 
         } catch (e: Exception) {
@@ -92,7 +84,7 @@ class RemindsController(private val call: ApplicationCall) {
     private fun findFcmTokenByLogin(login: String): String {
         return try {
             transaction {
-                FCMTokens.select {FCMTokens.login eq login }
+                FCMTokens.select { FCMTokens.login eq login }
                     .map { it[FCMTokens.fcmToken] }
                     .firstOrNull() ?: ""
             }
@@ -100,6 +92,7 @@ class RemindsController(private val call: ApplicationCall) {
             ""
         }
     }
+
     private fun findLoginByToken(token: String): String? {
         return try {
             transaction {
@@ -115,9 +108,9 @@ class RemindsController(private val call: ApplicationCall) {
     suspend fun deleteRemind() {
         val token = call.request.headers["Bearer-Authorization"]
         if (TokenCheck.isTokenValid(token.orEmpty())) {
-            val id = call.parameters["id"]?.toInt()
-            if (id != null) {
-                Reminds.delete(id)
+            val request = call.receive<DeleteRemindsRequest>()
+            request.ids.map {
+                Reminds.delete(it)
             }
             call.respond(HttpStatusCode.OK)
         } else {
@@ -130,7 +123,9 @@ class RemindsController(private val call: ApplicationCall) {
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val id = call.parameters["id"]?.toInt()
             val request = call.receive<UpdateRemindRequest>()
-            val remind = id?.let { request.mapToUprateRemindDTO(it, token!!) }
+            val remind = id?.let {
+                request.mapToUprateRemindDTO(it)
+            }
             if (remind != null) {
                 Reminds.update(remind)
             }
@@ -147,6 +142,23 @@ class RemindsController(private val call: ApplicationCall) {
             val reminds = Reminds.fetchReminds().filter { it.login == login }
             val remindResponses = reminds.map { it.mapToRemindResponse() }.toFetchRemindResponse()
             call.respond(remindResponses)
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
+        }
+
+    }
+
+    suspend fun getRemindById() {
+        val token = call.request.headers["Bearer-Authorization"]
+        if (TokenCheck.isTokenValid(token.orEmpty())) {
+            val login = findLoginByToken(token!!)
+            val id = call.parameters["id"]?.toInt()
+            val remind = Reminds.fetchReminds().filter { it.login == login }.firstOrNull { it.id == id }?.mapToRemindResponse()
+            if(remind != null) {
+                call.respond(HttpStatusCode.OK, remind)
+            } else {
+                call.respond(HttpStatusCode.OK)
+            }
         } else {
             call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
         }

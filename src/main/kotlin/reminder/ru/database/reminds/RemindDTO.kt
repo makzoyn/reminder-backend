@@ -15,8 +15,17 @@ class RemindDTO(
     val description: String?,
     val time: String?,
     val date: String?,
-    val alarmId: Int?,
+    val notified: Boolean = false,
     val login: String
+)
+
+@Serializable
+class UpdateRemindDTO(
+    val id: Int,
+    val title: String,
+    val description: String?,
+    val time: String?,
+    val date: String?
 )
 
 fun CreateRemindRequest.mapToRemindDTO(login: String): RemindDTO = RemindDTO(
@@ -25,24 +34,11 @@ fun CreateRemindRequest.mapToRemindDTO(login: String): RemindDTO = RemindDTO(
     description = description,
     time = time,
     date = date,
-    alarmId = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
+    notified = false,
     login = login
 )
 
-fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int, login: String): RemindDTO = RemindDTO(
-    id = id,
-    title = title,
-    description = description,
-    time = time,
-    date = date,
-    alarmId = alarmId,
-    login = login
-)
-
-
-
-fun RemindDTO.mapToCreateRemindResponse() : CreateRemindResponse =
-    CreateRemindResponse(
+fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int): UpdateRemindDTO = UpdateRemindDTO(
     id = id,
     title = title,
     description = description,
@@ -50,11 +46,23 @@ fun RemindDTO.mapToCreateRemindResponse() : CreateRemindResponse =
     date = date
 )
 
-fun RemindDTO.mapToRemindResponse() : RemindResponse =
+
+fun RemindDTO.mapToCreateRemindResponse(): CreateRemindResponse =
+    CreateRemindResponse(
+        id = id,
+        title = title,
+        description = description,
+        time = time,
+        date = date,
+        notified = notified
+    )
+
+fun RemindDTO.mapToRemindResponse(): RemindResponse =
     RemindResponse(
         id = id,
         title = title,
         description = description,
         time = time,
-        date = date
+        date = date,
+        notified = notified
     )

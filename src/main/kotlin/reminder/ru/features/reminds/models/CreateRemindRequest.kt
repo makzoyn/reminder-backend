@@ -16,5 +16,11 @@ data class CreateRemindResponse(
     val title: String,
     val description: String?,
     val time: String?,
-    val date: String?
+    val date: String?,
+    val notified: Boolean
+)
+
+@Serializable
+data class DeleteRemindsRequest(
+    val ids: List<Int>
 )
