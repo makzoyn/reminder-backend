@@ -3,7 +3,6 @@ package reminder.ru.database.reminds
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import reminder.ru.database.fcm_tokens.FCMTokens
 
 
 object Reminds : Table("reminds") {
@@ -14,6 +13,7 @@ object Reminds : Table("reminds") {
     private var date = Reminds.varchar("date", 10).nullable()
     private val login = Reminds.varchar("login", 25)
     private val notified = Reminds.bool("notified")
+    private val needToNotified = Reminds.bool("need_to_notified")
 
     fun insert(remindDTO: RemindDTO) {
         transaction {
@@ -25,6 +25,7 @@ object Reminds : Table("reminds") {
                 it[date] = remindDTO.date
                 it[notified] = remindDTO.notified
                 it[login] = remindDTO.login
+                it[needToNotified] = remindDTO.needToNotified
             }
         }
     }
@@ -36,6 +37,7 @@ object Reminds : Table("reminds") {
                 it[description] = remindDTO.description
                 it[time] = remindDTO.time
                 it[date] = remindDTO.date
+                it[needToNotified] = remindDTO.needToNotified
             }
         }
     }
@@ -66,7 +68,8 @@ object Reminds : Table("reminds") {
                         time = it[time],
                         date = it[date],
                         notified = it[notified],
-                        login = it[login]
+                        login = it[login],
+                        needToNotified = it[needToNotified]
                     )
                 }
             }

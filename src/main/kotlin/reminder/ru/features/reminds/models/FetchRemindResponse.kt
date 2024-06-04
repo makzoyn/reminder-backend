@@ -1,5 +1,6 @@
 package reminder.ru.features.reminds.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +15,8 @@ data class RemindResponse(
     val description: String?,
     val time: String?,
     val date: String?,
-    val notified: Boolean
+    val notified: Boolean,
+    @SerialName("need_to_notified") val needToNotified: Boolean
 )
 
 fun List<RemindResponse>.toFetchRemindResponse() = FetchRemindResponse(

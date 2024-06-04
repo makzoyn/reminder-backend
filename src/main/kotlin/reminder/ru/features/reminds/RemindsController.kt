@@ -135,17 +135,28 @@ class RemindsController(private val call: ApplicationCall) {
         }
     }
 
-    suspend fun performSearch() {
+    suspend fun getNotifiedReminds() {
         val token = call.request.headers["Bearer-Authorization"]
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val login = findLoginByToken(token!!)
-            val reminds = Reminds.fetchReminds().filter { it.login == login }
+            val reminds = Reminds.fetchReminds().filter { it.login == login }.filter { it.needToNotified }
             val remindResponses = reminds.map { it.mapToRemindResponse() }.toFetchRemindResponse()
             call.respond(remindResponses)
         } else {
             call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
         }
+    }
 
+    suspend fun getNotes() {
+        val token = call.request.headers["Bearer-Authorization"]
+        if (TokenCheck.isTokenValid(token.orEmpty())) {
+            val login = findLoginByToken(token!!)
+            val reminds = Reminds.fetchReminds().filter { it.login == login }.filter { it.needToNotified.not() }
+            val remindResponses = reminds.map { it.mapToRemindResponse() }.toFetchRemindResponse()
+            call.respond(remindResponses)
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
+        }
     }
 
     suspend fun getRemindById() {
@@ -153,7 +164,7 @@ class RemindsController(private val call: ApplicationCall) {
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val login = findLoginByToken(token!!)
             val id = call.parameters["id"]?.toInt()
-            val remind = Reminds.fetchReminds().filter { it.login == login }.firstOrNull { it.id == id }?.mapToRemindResponse()
+            val remind = Reminds.fetchReminds().filter { it.login == login }.filter { it.needToNotified }.firstOrNull { it.id == id }?.mapToRemindResponse()
             if(remind != null) {
                 call.respond(HttpStatusCode.OK, remind)
             } else {
@@ -162,7 +173,6 @@ class RemindsController(private val call: ApplicationCall) {
         } else {
             call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
         }
-
     }
 
 }

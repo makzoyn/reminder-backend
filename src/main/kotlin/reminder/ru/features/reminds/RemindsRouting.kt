@@ -10,7 +10,10 @@ fun Application.configureRemindsRouting() {
             remindsController.createRemind()
         }
         get("/reminds/fetch") {
-            RemindsController(call).performSearch()
+            RemindsController(call).getNotifiedReminds()
+        }
+        get("/reminds/notes") {
+            RemindsController(call).getNotes()
         }
         get("/reminds/fetch/{id}") {
             RemindsController(call).getRemindById()

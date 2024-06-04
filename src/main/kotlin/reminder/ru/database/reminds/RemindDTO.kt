@@ -1,6 +1,7 @@
 package reminder.ru.database.reminds
 
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import reminder.ru.features.reminds.models.CreateRemindRequest
 import reminder.ru.features.reminds.models.CreateRemindResponse
@@ -16,7 +17,8 @@ class RemindDTO(
     val time: String?,
     val date: String?,
     val notified: Boolean = false,
-    val login: String
+    val login: String,
+    val needToNotified: Boolean
 )
 
 @Serializable
@@ -25,7 +27,8 @@ class UpdateRemindDTO(
     val title: String,
     val description: String?,
     val time: String?,
-    val date: String?
+    val date: String?,
+    @SerialName("need_to_notified") val needToNotified: Boolean
 )
 
 fun CreateRemindRequest.mapToRemindDTO(login: String): RemindDTO = RemindDTO(
@@ -35,7 +38,8 @@ fun CreateRemindRequest.mapToRemindDTO(login: String): RemindDTO = RemindDTO(
     time = time,
     date = date,
     notified = false,
-    login = login
+    login = login,
+    needToNotified = needToNotified
 )
 
 fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int): UpdateRemindDTO = UpdateRemindDTO(
@@ -43,7 +47,8 @@ fun UpdateRemindRequest.mapToUprateRemindDTO(id: Int): UpdateRemindDTO = UpdateR
     title = title,
     description = description,
     time = time,
-    date = date
+    date = date,
+    needToNotified = needToNotified
 )
 
 
@@ -54,7 +59,8 @@ fun RemindDTO.mapToCreateRemindResponse(): CreateRemindResponse =
         description = description,
         time = time,
         date = date,
-        notified = notified
+        notified = notified,
+        needToNotified = needToNotified
     )
 
 fun RemindDTO.mapToRemindResponse(): RemindResponse =
@@ -64,5 +70,6 @@ fun RemindDTO.mapToRemindResponse(): RemindResponse =
         description = description,
         time = time,
         date = date,
-        notified = notified
+        notified = notified,
+        needToNotified = needToNotified
     )
