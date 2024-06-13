@@ -93,6 +93,7 @@ class RemindsController(private val call: ApplicationCall) {
         }
     }
 
+
     private fun findLoginByToken(token: String): String? {
         return try {
             transaction {
@@ -147,6 +148,56 @@ class RemindsController(private val call: ApplicationCall) {
         }
     }
 
+    suspend fun getNotifiedRemindsByTitle() {
+        val token = call.request.headers["Bearer-Authorization"]
+        if (TokenCheck.isTokenValid(token.orEmpty())) {
+            val login = findLoginByToken(token!!)
+            val titleQuery = call.request.queryParameters["title"]
+
+            if (titleQuery != null) {
+                val reminds = Reminds.fetchReminds()
+                    .filter { it.login == login }
+                    .filter { it.needToNotified }
+                    .filter { it.title.contains(titleQuery, ignoreCase = true) }
+
+                val remindResponses = reminds.map { it.mapToRemindResponse() }.toFetchRemindResponse()
+                call.respond(remindResponses)
+            } else {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorModel("Missing title query parameter", "Please provide a title query parameter")
+                )
+            }
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
+        }
+    }
+
+    suspend fun getNotesByTitle() {
+        val token = call.request.headers["Bearer-Authorization"]
+        if (TokenCheck.isTokenValid(token.orEmpty())) {
+            val login = findLoginByToken(token!!)
+            val titleQuery = call.request.queryParameters["title"]
+
+            if (titleQuery != null) {
+                val reminds = Reminds.fetchReminds()
+                    .filter { it.login == login }
+                    .filter { it.needToNotified.not() }
+                    .filter { it.title.contains(titleQuery, ignoreCase = true) }
+
+                val remindResponses = reminds.map { it.mapToRemindResponse() }.toFetchRemindResponse()
+                call.respond(remindResponses)
+            } else {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorModel("Missing title query parameter", "Please provide a title query parameter")
+                )
+            }
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, ErrorModel("Token expired", "Need to authorization"))
+        }
+    }
+
     suspend fun getNotes() {
         val token = call.request.headers["Bearer-Authorization"]
         if (TokenCheck.isTokenValid(token.orEmpty())) {
@@ -164,8 +215,9 @@ class RemindsController(private val call: ApplicationCall) {
         if (TokenCheck.isTokenValid(token.orEmpty())) {
             val login = findLoginByToken(token!!)
             val id = call.parameters["id"]?.toInt()
-            val remind = Reminds.fetchReminds().filter { it.login == login }.filter { it.needToNotified }.firstOrNull { it.id == id }?.mapToRemindResponse()
-            if(remind != null) {
+            val remind = Reminds.fetchReminds().filter { it.login == login }
+                .firstOrNull { it.id == id }?.mapToRemindResponse()
+            if (remind != null) {
                 call.respond(HttpStatusCode.OK, remind)
             } else {
                 call.respond(HttpStatusCode.OK)

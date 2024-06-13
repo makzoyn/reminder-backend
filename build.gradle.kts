@@ -19,7 +19,6 @@ application {
 
 repositories {
     mavenCentral()
-
 }
 
 val exposed_version: String by project

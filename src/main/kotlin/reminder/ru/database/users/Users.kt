@@ -1,9 +1,14 @@
 package reminder.ru.database.users
 
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
+import reminder.ru.database.reminds.Reminds
+import reminder.ru.database.reminds.UpdateRemindDTO
+import reminder.ru.features.user.models.UserUpdateModel
 import java.util.*
 
 object Users : Table("users") {
@@ -37,9 +42,21 @@ object Users : Table("users") {
                     email = userModel[email]
                 )
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             null
+        }
+    }
+
+    fun update(userUpdate: UserUpdateModel, id: Int) {
+        transaction {
+            Users.update({ Users.id eq id }) {
+                if (userUpdate.login != null)
+                    it[login] = userUpdate.login
+                if (userUpdate.password != null)
+                    it[password] = userUpdate.password
+                if (userUpdate.email != null)
+                    it[email] = userUpdate.email
+            }
         }
     }
 }
