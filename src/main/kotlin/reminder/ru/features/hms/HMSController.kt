@@ -26,7 +26,7 @@ class HMSController(private val call: ApplicationCall) {
                 FCMTokenDTO(
                     rowId = Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE),
                     login = login!!,
-                    fcmToken = fcmTokenReceiveRemote.fcmToken
+                    fcmToken = fcmTokenReceiveRemote.hmsToken
                 )
             )
             call.respond(HMSReceiveResponse(token = fcmTokenReceiveRemote.hmsToken))
