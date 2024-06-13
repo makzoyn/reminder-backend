@@ -3,6 +3,9 @@ package reminder.ru
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import com.huawei.hms.messaging.PushService
+import com.huawei.hms.HuaweiServiceCredential
+import com.huawei.hms.messaging.PushServiceOptions
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -11,6 +14,7 @@ import reminder.ru.features.fcm.configureFCMRouting
 import reminder.ru.features.login.configureLoginRouting
 import reminder.ru.features.register.configureRegisterRouting
 import reminder.ru.features.reminds.configureRemindsRouting
+import reminder.ru.features.user.configureUserRouting
 import reminder.ru.plugins.*
 
 fun main() {
@@ -22,6 +26,7 @@ fun main() {
 
 fun Application.module() {
     configureRemindsRouting()
+    configureUserRouting()
     configureSerialization()
     configureLoginRouting()
     configureRegisterRouting()
@@ -33,5 +38,11 @@ fun Application.module() {
         .setCredentials(GoogleCredentials.fromStream(servicesKey))
         .build()
 
+    val servicesKeyHms = this::class.java.classLoader.getResourceAsStream("agpconnect_key.json")
+    val optionHms = PushService.builder()
+        .setCredentials(HuaweiServiceCredential.fromStream(servicesKeyHms))
+        .build()
+
+    PushService.initApp(optionHms)
     FirebaseApp.initializeApp(option)
 }
